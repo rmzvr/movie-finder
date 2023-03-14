@@ -26,7 +26,7 @@ function MyApp({ ...rest }) {
       <Head>
         <meta name='viewport' content='initial-scale=1, width=device-width' />
         <meta
-          http-equiv='Content-Security-Policy'
+          httpEquiv='Content-Security-Policy'
           content='upgrade-insecure-requests'
         />
       </Head>

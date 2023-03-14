@@ -4,21 +4,41 @@ import {
   Pagination,
   Typography,
   Container,
-  useMediaQuery,
+  Box,
+  Stack,
 } from '@mui/material'
+
 import { useState } from 'react'
-import { NextRouter, useRouter } from 'next/router'
+
+import Head from 'next/head'
 import { GetServerSidePropsContext } from 'next'
+import { NextRouter, useRouter } from 'next/router'
+
 import { BASE_RADIX, MAX_MOVIES_PER_PAGE } from '../../constants'
 import { Props } from '../../types/props/MovieList'
 import { MoviePreview } from '../../types/moviePreview'
 import MovieListItem from '../../components/MovieListItem'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import Head from 'next/head'
 import { useSelector } from 'react-redux'
 import { selectMovies } from '../../store/moviesSlice'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 export default function Movies({ movieList, totalMovies }: Props) {
+	const theme = useTheme()
+	
+	//! Create hook form queries
+  const isPhonesMediaQuery = useMediaQuery(
+    theme.breakpoints.between('xs', 'sm')
+  )
+  const isTabletsMediaQuery = useMediaQuery(
+    theme.breakpoints.between('sm', 'md')
+  )
+  const isDesktopsMediaQuery = useMediaQuery(theme.breakpoints.up('md'))
+
+  const siblingCount = isDesktopsMediaQuery ? 1 : isTabletsMediaQuery ? 1 : 0
+  const boundaryCount = 1
+
   const router: NextRouter = useRouter()
 
   const totalPages: number = Math.ceil(totalMovies / MAX_MOVIES_PER_PAGE)
@@ -37,7 +57,7 @@ export default function Movies({ movieList, totalMovies }: Props) {
     value: number
   ) {
     const res = await fetch(
-      `http://www.omdbapi.com/?apikey=885b04f0&s=${searchQuery}&page=${value}`
+      `${process.env.NEXT_PUBLIC_URL_WITH_API_KEY}&s=${searchQuery}&page=${value}`
     )
 
     const { Search: movies } = await res.json()
@@ -59,52 +79,73 @@ export default function Movies({ movieList, totalMovies }: Props) {
       <Head>
         <title>Movies</title>
       </Head>
+
       <Container maxWidth='xl'>
-        <Grid container paddingBottom='2rem'>
-          <Grid item sm={4} sx={{ paddingTop: '2rem' }}>
-            <Button
-              variant='outlined'
-              startIcon={<ArrowBackIosNewIcon fontSize='small' />}
-              onClick={navigateToSearch}
+        <Stack spacing={3} my={3}>
+          <Grid container>
+            <Grid item xs={12} sm={4}>
+              <Button
+                variant='outlined'
+                startIcon={<ArrowBackIosNewIcon fontSize='small' />}
+                onClick={navigateToSearch}
+              >
+                Go to search
+              </Button>
+            </Grid>
+
+            {!isPhonesMediaQuery && (
+              <Grid item xs={8} display='flex' justifyContent='flex-end'>
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  siblingCount={siblingCount}
+                  boundaryCount={boundaryCount}
+                  onChange={handleChange}
+                  variant='outlined'
+                  shape='rounded'
+                  size='large'
+                />
+              </Grid>
+            )}
+          </Grid>
+
+          <Typography variant='h5' component='h1'>
+            Found {totalMovies} results for "{searchQuery}"
+          </Typography>
+
+          <Box>
+            <Grid
+              container
+              columns={{ xs: 1, sm: 3, md: 4, lg: 5 }}
+              spacing={5}
             >
-              Go to search
-            </Button>
-          </Grid>
-          <Grid
-            item
-            sm={8}
-            display='flex'
-            justifyContent='flex-end'
-            sx={{ paddingTop: '2rem' }}
-          >
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              siblingCount={0}
-              boundaryCount={1}
-              onChange={handleChange}
-              variant='outlined'
-              shape='rounded'
-              size='large'
-            />
-          </Grid>
-        </Grid>
+              {movies.map((movie: MoviePreview) => (
+                <MovieListItem
+                  key={movie.imdbID}
+                  movie={movie}
+                  isFavoriteMovie={favoriteMovies.some(
+                    (m: MoviePreview) => m.imdbID === movie.imdbID
+                  )}
+                />
+              ))}
+            </Grid>
+          </Box>
 
-        <Typography variant='h5' component='h5' mb='2rem'>
-          Found {totalMovies} results for "{searchQuery}"
-        </Typography>
-
-        <Grid container spacing={4} marginBottom='2rem'>
-          {movies.map((movie: MoviePreview) => (
-            <MovieListItem
-              key={movie.imdbID}
-              movie={movie}
-              isFavoriteMovie={favoriteMovies.some(
-                (m) => m.imdbID === movie.imdbID
-              )}
-            />
-          ))}
-        </Grid>
+          {isPhonesMediaQuery && (
+            <Box display='flex' justifyContent='center'>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                siblingCount={siblingCount}
+                boundaryCount={boundaryCount}
+                onChange={handleChange}
+                variant='outlined'
+                shape='rounded'
+                size='large'
+              />
+            </Box>
+          )}
+        </Stack>
       </Container>
     </>
   )
@@ -117,7 +158,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const pageQuery: string = page ? `page=${page}` : ''
 
   const res = await fetch(
-    `${process.env.DB_HOST}?apikey=${process.env.API_KEY}&${searchQuery}&${pageQuery}`
+    `${process.env.NEXT_PUBLIC_URL_WITH_API_KEY}&${searchQuery}&${pageQuery}`
   )
 
   const { Search: movies, totalResults: totalMovies } = await res.json()

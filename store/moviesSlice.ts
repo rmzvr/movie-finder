@@ -25,14 +25,15 @@ export const moviesSlice = createSlice({
         ...state.movies.filter((movie) => movie.imdbID !== action.payload.id),
       ]
     },
-  },
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
+	},
+	//! Fix type of action
+  extraReducers: (builder) => {
+    builder.addCase(HYDRATE, (state, action: any) => {
       return {
         ...state,
         ...action.payload.movies,
       }
-    },
+    })
   },
 })
 
