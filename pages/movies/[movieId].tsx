@@ -128,7 +128,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const movieId = context.params?.movieId
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_URL_WITH_API_KEY}&i=${movieId}&plot=full`
+    `${process.env.DB_HOST}?apikey=${process.env.API_KEY}&i=${movieId}&plot=full`
   )
 
   const movie = await res.json()

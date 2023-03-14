@@ -7,7 +7,6 @@ import {
   Box,
   Stack,
 } from '@mui/material'
-
 import { useState } from 'react'
 
 import Head from 'next/head'
@@ -25,9 +24,7 @@ import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 export default function Movies({ movieList, totalMovies }: Props) {
-	const theme = useTheme()
-	
-	//! Create hook form queries
+  const theme = useTheme()
   const isPhonesMediaQuery = useMediaQuery(
     theme.breakpoints.between('xs', 'sm')
   )
@@ -38,6 +35,10 @@ export default function Movies({ movieList, totalMovies }: Props) {
 
   const siblingCount = isDesktopsMediaQuery ? 1 : isTabletsMediaQuery ? 1 : 0
   const boundaryCount = 1
+
+  console.log('isPhonesMediaQuery => ', isPhonesMediaQuery)
+  console.log('isTabletsMediaQuery => ', isTabletsMediaQuery)
+  console.log('isDesktopsMediaQuery => ', isDesktopsMediaQuery)
 
   const router: NextRouter = useRouter()
 
@@ -57,7 +58,7 @@ export default function Movies({ movieList, totalMovies }: Props) {
     value: number
   ) {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_URL_WITH_API_KEY}&s=${searchQuery}&page=${value}`
+      `http://www.omdbapi.com/?apikey=885b04f0&s=${searchQuery}&page=${value}`
     )
 
     const { Search: movies } = await res.json()
@@ -158,7 +159,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const pageQuery: string = page ? `page=${page}` : ''
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_URL_WITH_API_KEY}&${searchQuery}&${pageQuery}`
+    `${process.env.DB_HOST}?apikey=${process.env.API_KEY}&${searchQuery}&${pageQuery}`
   )
 
   const { Search: movies, totalResults: totalMovies } = await res.json()
