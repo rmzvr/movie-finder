@@ -3,24 +3,17 @@ import Image from 'next/image'
 import { GetServerSidePropsContext } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 
-import { NO_IMAGE_PLACEHOLDER } from '../../constants'
-import { Props } from '../../types/props/MovieDetail'
+import { NO_IMAGE_PLACEHOLDER } from '../../src/constants'
+import { Props } from '../../src/types/props/MovieDetail'
 
-import MovieCategoryItem from '../../components/MovieCategoryItem'
+import MovieCategoryItem from '../../src/components/MovieCategoryItem'
 
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import {
-  Box,
-  Button,
-  Container,
-  Typography,
-  Grid,
-  Stack,
-} from '@mui/material'
-import TitleSection from '../../components/MovieDetails/TitleSection'
-import RatingSection from '../../components/MovieDetails/RatingSection'
-import DetailsList from '../../components/MovieDetails/DetailsList'
-import DetailsListItem from '../../components/MovieDetails/DetailsListItem'
+import { Box, Button, Container, Typography, Grid, Stack } from '@mui/material'
+import TitleSection from '../../src/components/MovieDetails/TitleSection'
+import RatingSection from '../../src/components/MovieDetails/RatingSection'
+import DetailsList from '../../src/components/MovieDetails/DetailsList'
+import DetailsListItem from '../../src/components/MovieDetails/DetailsListItem'
 
 export default function MovieDetails({ movie }: Props) {
   const router: NextRouter = useRouter()

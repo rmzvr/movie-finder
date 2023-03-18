@@ -1,8 +1,8 @@
 import { Container, Grid, Button, Typography, Stack, Box } from '@mui/material'
 import { useSelector } from 'react-redux'
-import MovieListItem from '../components/MovieListItem'
-import { selectMovies } from '../store/moviesSlice'
-import { MoviePreview } from '../types/moviePreview'
+import MovieListItem from '../src/components/MovieListItem'
+import { selectMovies } from '../src/store/moviesSlice'
+import { MoviePreview } from '../src/types/moviePreview'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import { NextRouter, useRouter } from 'next/router'
 

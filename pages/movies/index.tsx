@@ -13,13 +13,13 @@ import Head from 'next/head'
 import { GetServerSidePropsContext } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 
-import { BASE_RADIX, MAX_MOVIES_PER_PAGE } from '../../constants'
-import { Props } from '../../types/props/MovieList'
-import { MoviePreview } from '../../types/moviePreview'
-import MovieListItem from '../../components/MovieListItem'
+import { BASE_RADIX, MAX_MOVIES_PER_PAGE } from '../../src/constants'
+import { Props } from '../../src/types/props/MovieList'
+import { MoviePreview } from '../../src/types/moviePreview'
+import MovieListItem from '../../src/components/MovieListItem'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import { useSelector } from 'react-redux'
-import { selectMovies } from '../../store/moviesSlice'
+import { selectMovies } from '../../src/store/moviesSlice'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
@@ -35,10 +35,6 @@ export default function Movies({ movieList, totalMovies }: Props) {
 
   const siblingCount = isDesktopsMediaQuery ? 1 : isTabletsMediaQuery ? 1 : 0
   const boundaryCount = 1
-
-  console.log('isPhonesMediaQuery => ', isPhonesMediaQuery)
-  console.log('isTabletsMediaQuery => ', isTabletsMediaQuery)
-  console.log('isDesktopsMediaQuery => ', isDesktopsMediaQuery)
 
   const router: NextRouter = useRouter()
 
