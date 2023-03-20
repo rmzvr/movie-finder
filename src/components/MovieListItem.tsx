@@ -1,7 +1,7 @@
 import { useState, MouseEvent } from 'react'
 
 import { useDispatch } from 'react-redux'
-import { addToFavorite, removeFromFavorite } from '../store/movieApi'
+// import { addToFavorite, removeFromFavorite } from '../store/movieApi'
 
 import {
   Box,
@@ -40,11 +40,11 @@ export default function MovieListItem({
   ): void {
     event.stopPropagation()
 
-    if (isFavorite) {
-      dispatch(removeFromFavorite({ id: movie.imdbID }))
-    } else {
-      dispatch(addToFavorite(movie))
-    }
+    // if (isFavorite) {
+    //   dispatch(removeFromFavorite({ id: movie.imdbID }))
+    // } else {
+    //   dispatch(addToFavorite(movie))
+    // }
 
     setIsFavorite((prev) => !prev)
   }
