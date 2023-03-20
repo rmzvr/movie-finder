@@ -7,62 +7,72 @@ import {
   Box,
   Stack,
 } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Head from 'next/head'
 import { GetServerSidePropsContext } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 
 import { BASE_RADIX, MAX_MOVIES_PER_PAGE } from '../../src/constants'
-import { Props } from '../../src/types/props/MovieList'
 import { MoviePreview } from '../../src/types/moviePreview'
 import MovieListItem from '../../src/components/MovieListItem'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import { useSelector } from 'react-redux'
-import { selectMovies } from '../../src/store/moviesSlice'
+import {
+  getMovieList,
+  getRunningQueriesThunk,
+  useGetMovieListQuery,
+} from '../../src/store/movieApi'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { wrapper } from '../../src/store/store'
 
-export default function Movies({ movieList, totalMovies }: Props) {
+export default function Movies() {
+  const isBrowser = () => typeof window !== 'undefined'
+
   const theme = useTheme()
   const isPhonesMediaQuery = useMediaQuery(
     theme.breakpoints.between('xs', 'sm')
   )
-  const isTabletsMediaQuery = useMediaQuery(
-    theme.breakpoints.between('sm', 'md')
-  )
-  const isDesktopsMediaQuery = useMediaQuery(theme.breakpoints.up('md'))
 
-  const siblingCount = isDesktopsMediaQuery ? 1 : isTabletsMediaQuery ? 1 : 0
-  const boundaryCount = 1
+  const siblingCount = isPhonesMediaQuery ? 0 : 1
+  const boundaryCount = isPhonesMediaQuery ? 0 : 1
 
   const router: NextRouter = useRouter()
+
+  const { search, page } = router.query
+
+  const { data } = useGetMovieListQuery({
+    search,
+    page,
+  })
+
+  const movies = data?.Search ?? []
+  const totalMovies = data?.totalResults ?? 1
 
   const totalPages: number = Math.ceil(totalMovies / MAX_MOVIES_PER_PAGE)
   const initialPage: number = parseInt(
     router.query.page?.toString() ?? '1',
     BASE_RADIX
   )
-  const searchQuery: string = router.query.search?.toString() || ''
 
   const [currentPage, setCurrentPage] = useState<number>(initialPage)
-  const [movies, setMovies] = useState<MoviePreview[]>(movieList)
-  const favoriteMovies = useSelector(selectMovies)
+
+  useEffect(() => {
+    isPhonesMediaQuery && scrollToTop()
+  }, [currentPage])
+
+  function scrollToTop() {
+    if (!isBrowser()) return
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   async function handleChange(
     event: React.ChangeEvent<unknown>,
     value: number
   ) {
-    const res = await fetch(
-      `http://www.omdbapi.com/?apikey=885b04f0&s=${searchQuery}&page=${value}`
-    )
-
-    const { Search: movies } = await res.json()
-
-    setMovies(movies)
     setCurrentPage(value)
 
-    router.push(`/movies?search=${searchQuery}&page=${value}`, undefined, {
+    router.push(`/movies?search=${search}&page=${value}`, undefined, {
       shallow: true,
     })
   }
@@ -107,7 +117,7 @@ export default function Movies({ movieList, totalMovies }: Props) {
           </Grid>
 
           <Typography variant='h5' component='h1'>
-            Found {totalMovies} results for "{searchQuery}"
+            Found {totalMovies} results for "{search}"
           </Typography>
 
           <Box>
@@ -120,9 +130,9 @@ export default function Movies({ movieList, totalMovies }: Props) {
                 <MovieListItem
                   key={movie.imdbID}
                   movie={movie}
-                  isFavoriteMovie={favoriteMovies.some(
-                    (m: MoviePreview) => m.imdbID === movie.imdbID
-                  )}
+                  // isFavoriteMovie={favoriteMovies.some(
+                  //   (m: MoviePreview) => m.imdbID === movie.imdbID
+                  // )}
                 />
               ))}
             </Grid>
@@ -148,22 +158,16 @@ export default function Movies({ movieList, totalMovies }: Props) {
   )
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { page, search } = context.query
+export const getServerSideProps = wrapper.getServerSideProps(
+  (store) => async (context: GetServerSidePropsContext) => {
+    const { page, search } = context.query
 
-  const searchQuery: string = search ? `s=${search}` : ''
-  const pageQuery: string = page ? `page=${page}` : ''
+    store.dispatch(getMovieList.initiate({ search, page }))
 
-  const res = await fetch(
-    `${process.env.DB_HOST}?apikey=${process.env.API_KEY}&${searchQuery}&${pageQuery}`
-  )
+    await Promise.all(store.dispatch(getRunningQueriesThunk()))
 
-  const { Search: movies, totalResults: totalMovies } = await res.json()
-
-  return {
-    props: {
-      movieList: movies ? movies : [],
-      totalMovies: totalMovies ? +totalMovies : 0,
-    },
+    return {
+      props: {},
+    }
   }
-}
+)

@@ -2,6 +2,6 @@ import { MoviePreview } from '../moviePreview'
 
 export interface Props {
   movie: MoviePreview
-	isFavoriteMovie: boolean
+	isFavoriteMovie?: boolean
 	isFavoriteButtonVisible?: boolean
 }

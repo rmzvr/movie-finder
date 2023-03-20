@@ -21,10 +21,20 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
   return (
     <Html lang='en'>
       <Head>
-        {/* PWA primary color */}
         <meta name='theme-color' content={theme.palette.primary.main} />
         <link rel='shortcut icon' href='/favicon.ico' />
         <meta name='emotion-insertion-point' content='' />
+        <meta
+          httpEquiv='Content-Security-Policy'
+          content='upgrade-insecure-requests'
+        />
+        <link
+          rel='stylesheet'
+          href='https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css'
+          integrity='sha512-42kB9yDlYiCEfx2xVwq0q7hT4uf26FUgSIZBK8uiaEnTdShXjwr8Ip1V4xGJMg3mHkUt9nNuTDxunHF0/EgxLQ=='
+          crossOrigin='anonymous'
+          referrerPolicy='no-referrer'
+        />
         {emotionStyleTags}
       </Head>
       <body>

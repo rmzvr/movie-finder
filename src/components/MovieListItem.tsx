@@ -1,7 +1,7 @@
 import { useState, MouseEvent } from 'react'
 
 import { useDispatch } from 'react-redux'
-import { addToFavorite, removeFromFavorite } from '../store/moviesSlice'
+import { addToFavorite, removeFromFavorite } from '../store/movieApi'
 
 import {
   Box,
