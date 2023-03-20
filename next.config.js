@@ -5,13 +5,13 @@ module.exports = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'm.media-amazon.com',
+        hostname: '*',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'http',
-        hostname: 'hwr.org.uk',
+        hostname: '*',
         port: '',
         pathname: '/**',
       },

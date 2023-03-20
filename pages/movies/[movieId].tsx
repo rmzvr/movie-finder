@@ -4,7 +4,6 @@ import { GetServerSidePropsContext } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 
 import { NO_IMAGE_PLACEHOLDER } from '../../src/constants'
-import { Props } from '../../src/types/props/MovieDetail'
 
 import MovieCategoryItem from '../../src/components/MovieCategoryItem'
 
@@ -14,16 +13,29 @@ import TitleSection from '../../src/components/MovieDetails/TitleSection'
 import RatingSection from '../../src/components/MovieDetails/RatingSection'
 import DetailsList from '../../src/components/MovieDetails/DetailsList'
 import DetailsListItem from '../../src/components/MovieDetails/DetailsListItem'
+import { wrapper } from '../../src/store/store'
+import {
+  getMovieById,
+  getRunningQueriesThunk,
+  useGetMovieByIdQuery,
+} from '../../src/store/movieApi'
 
-export default function MovieDetails({ movie }: Props) {
+export default function MovieDetails() {
   const router: NextRouter = useRouter()
 
-  const imageURL: string =
-    movie.Poster === 'N/A' ? NO_IMAGE_PLACEHOLDER : movie.Poster
+  const movieId: string = router.query?.movieId?.toString() ?? ''
 
-  const genres = movie.Genre.split(', ')
-  const actors = movie.Actors.split(', ')
-  const languages = movie.Language.split(', ')
+  const { data: movie } = useGetMovieByIdQuery(movieId)
+
+  const imageURL: string = movie?.Poster
+    ? movie.Poster === 'N/A'
+      ? NO_IMAGE_PLACEHOLDER
+      : movie.Poster
+    : ''
+
+  const genres: string[] = movie?.Genre.split(', ') ?? []
+  const actors: string[] = movie?.Actors.split(', ') ?? []
+  const languages: string[] = movie?.Language.split(', ') ?? []
 
   function navigateBack(): void {
     router.back()
@@ -32,7 +44,7 @@ export default function MovieDetails({ movie }: Props) {
   return (
     <>
       <Head>
-        <title>Movie | {movie.Title}</title>
+        <title>{movie?.Title ?? ''} | Movie</title>
       </Head>
 
       <Container maxWidth='lg'>
@@ -56,7 +68,7 @@ export default function MovieDetails({ movie }: Props) {
                 >
                   <Image
                     src={imageURL}
-                    alt={movie.Title}
+                    alt={movie?.Title ?? ''}
                     fill
                     style={{ objectFit: 'cover' }}
                   />
@@ -65,13 +77,16 @@ export default function MovieDetails({ movie }: Props) {
 
               <Grid item xs={12} md={8}>
                 <Stack spacing={2}>
-                  <TitleSection title={movie.Title} />
-                  <RatingSection rating={movie.imdbRating} />
+                  <TitleSection title={movie?.Title ?? ''} />
+                  <RatingSection rating={movie?.imdbRating ?? ''} />
 
                   <DetailsList>
-                    <DetailsListItem title='Length' content={movie.Runtime} />
+                    <DetailsListItem
+                      title='Length'
+                      content={movie?.Runtime ?? ''}
+                    />
                     <DetailsListItem title='Language' content={languages[0]} />
-                    <DetailsListItem title='Year' content={movie.Year} />
+                    <DetailsListItem title='Year' content={movie?.Year ?? ''} />
                   </DetailsList>
 
                   <MovieCategoryItem title='Genres'>
@@ -90,7 +105,7 @@ export default function MovieDetails({ movie }: Props) {
                   </MovieCategoryItem>
 
                   <MovieCategoryItem title='Synopsis'>
-                    <Typography variant='body1'>{movie.Plot}</Typography>
+                    <Typography variant='body1'>{movie?.Plot ?? ''}</Typography>
                   </MovieCategoryItem>
 
                   <MovieCategoryItem title='Actors'>
@@ -117,18 +132,16 @@ export default function MovieDetails({ movie }: Props) {
   )
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const movieId = context.params?.movieId
+export const getServerSideProps = wrapper.getServerSideProps(
+  (store) => async (context: GetServerSidePropsContext) => {
+    const movieId = context.params?.movieId?.toString() ?? ''
 
-  const res = await fetch(
-    `${process.env.DB_HOST}?apikey=${process.env.API_KEY}&i=${movieId}&plot=full`
-  )
+    store.dispatch(getMovieById.initiate(movieId))
 
-  const movie = await res.json()
+    await Promise.all(store.dispatch(getRunningQueriesThunk()))
 
-  return {
-    props: {
-      movie,
-    },
+    return {
+      props: {},
+    }
   }
-}
+)

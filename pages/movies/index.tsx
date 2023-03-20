@@ -39,7 +39,10 @@ export default function Movies() {
 
   const router: NextRouter = useRouter()
 
-  const { search, page } = router.query
+  let { search, page } = router.query
+
+  search = search?.toString() ?? ''
+  page = page?.toString() ?? ''
 
   const { data } = useGetMovieListQuery({
     search,
@@ -49,7 +52,7 @@ export default function Movies() {
   const movies = data?.Search ?? []
   const totalMovies = data?.totalResults ?? 1
 
-  const totalPages: number = Math.ceil(totalMovies / MAX_MOVIES_PER_PAGE)
+  const totalPages: number = Math.ceil(+totalMovies / MAX_MOVIES_PER_PAGE)
   const initialPage: number = parseInt(
     router.query.page?.toString() ?? '1',
     BASE_RADIX
@@ -160,7 +163,8 @@ export default function Movies() {
 
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (context: GetServerSidePropsContext) => {
-    const { page, search } = context.query
+    const search = context.query?.search?.toString() ?? ''
+    const page = context.query?.page?.toString() ?? ''
 
     store.dispatch(getMovieList.initiate({ search, page }))
 
