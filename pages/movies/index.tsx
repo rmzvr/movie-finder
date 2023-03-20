@@ -25,14 +25,20 @@ import {
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { wrapper } from '../../src/store/store'
+import { selectFavorites, setFavorites } from '../../src/store/favoritesSlice'
+import { useAppSelector } from '../../src/hooks/useAppSelector'
+import { useAppDispatch } from '../../src/hooks/useAppDispatch'
 
 export default function Movies() {
+  const dispatch = useAppDispatch()
   const isBrowser = () => typeof window !== 'undefined'
 
   const theme = useTheme()
   const isPhonesMediaQuery = useMediaQuery(
     theme.breakpoints.between('xs', 'sm')
   )
+
+  const favoriteMovies = useAppSelector(selectFavorites)
 
   const siblingCount = isPhonesMediaQuery ? 0 : 1
   const boundaryCount = isPhonesMediaQuery ? 0 : 1
@@ -63,6 +69,13 @@ export default function Movies() {
   useEffect(() => {
     isPhonesMediaQuery && scrollToTop()
   }, [currentPage])
+
+  useEffect(() => {
+    const data = localStorage.getItem('favorites')
+    const parsedData = data ? JSON.parse(data) : []
+
+    dispatch(setFavorites(parsedData))
+  }, [])
 
   function scrollToTop() {
     if (!isBrowser()) return
@@ -133,9 +146,10 @@ export default function Movies() {
                 <MovieListItem
                   key={movie.imdbID}
                   movie={movie}
-                  // isFavoriteMovie={favoriteMovies.some(
-                  //   (m: MoviePreview) => m.imdbID === movie.imdbID
-                  // )}
+                  isFavoriteButtonVisible={true}
+                  isFavoriteMovie={favoriteMovies.some((m: MoviePreview) => {
+                    return m.imdbID === movie.imdbID
+                  })}
                 />
               ))}
             </Grid>

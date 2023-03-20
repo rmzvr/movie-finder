@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, useEffect } from 'react'
 
 import { useDispatch } from 'react-redux'
 // import { addToFavorite, removeFromFavorite } from '../store/movieApi'
@@ -20,16 +20,22 @@ import { NO_IMAGE_PLACEHOLDER } from '../constants'
 
 import { Props } from '../types/props/MovieListItem'
 import { NextRouter, useRouter } from 'next/router'
+import { useAppDispatch } from '../hooks/useAppDispatch'
+import { addFavorite, removeFavorite } from '../store/favoritesSlice'
 
 export default function MovieListItem({
   movie,
   isFavoriteMovie = false,
-  isFavoriteButtonVisible = true,
+  isFavoriteButtonVisible = false,
 }: Props) {
   const router: NextRouter = useRouter()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [isFavorite, setIsFavorite] = useState<boolean>(isFavoriteMovie)
+
+  useEffect(() => {
+    setIsFavorite(isFavoriteMovie)
+  }, [isFavoriteMovie])
 
   const imageURL: string =
     movie.Poster === 'N/A' ? NO_IMAGE_PLACEHOLDER : movie.Poster
@@ -40,11 +46,11 @@ export default function MovieListItem({
   ): void {
     event.stopPropagation()
 
-    // if (isFavorite) {
-    //   dispatch(removeFromFavorite({ id: movie.imdbID }))
-    // } else {
-    //   dispatch(addToFavorite(movie))
-    // }
+    if (isFavorite) {
+      dispatch(removeFavorite(movie.imdbID))
+    } else {
+      dispatch(addFavorite(movie))
+    }
 
     setIsFavorite((prev) => !prev)
   }

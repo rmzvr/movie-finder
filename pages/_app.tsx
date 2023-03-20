@@ -14,7 +14,6 @@ import Nprogress from 'nprogress'
 
 Nprogress.configure({ showSpinner: false })
 
-// Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()
 
 export interface MyAppProps extends AppProps {
@@ -40,7 +39,6 @@ function MyApp({ ...rest }) {
     <CacheProvider value={emotionCache}>
       <Head>
         <meta name='viewport' content='initial-scale=1, width=device-width' />
-
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />

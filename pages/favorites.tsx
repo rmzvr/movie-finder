@@ -1,15 +1,15 @@
 import { Container, Grid, Button, Typography, Stack, Box } from '@mui/material'
-import { useSelector } from 'react-redux'
 import MovieListItem from '../src/components/MovieListItem'
-// import { selectMovies } from '../src/store/movieApi'
 import { MoviePreview } from '../src/types/moviePreview'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import { NextRouter, useRouter } from 'next/router'
+import { useAppSelector } from '../src/hooks/useAppSelector'
+import { selectFavorites } from '../src/store/favoritesSlice'
 
 export default function Favorites() {
   const router: NextRouter = useRouter()
 
-  // const favoriteMovies = useSelector(selectMovies)
+  const favoriteMovies = useAppSelector(selectFavorites)
 
   function navigateBack(): void {
     router.back()
@@ -29,7 +29,7 @@ export default function Favorites() {
             </Button>
           </Box>
 
-          {/* {!favoriteMovies.length && (
+          {!favoriteMovies.length && (
             <Typography variant='h5' component='h5'>
               No favorite movies...
             </Typography>
@@ -42,15 +42,10 @@ export default function Favorites() {
               spacing={5}
             >
               {favoriteMovies.map((movie: MoviePreview) => (
-                <MovieListItem
-                  key={movie.imdbID}
-                  movie={movie}
-                  isFavoriteButtonVisible={false}
-                  isFavoriteMovie={favoriteMovies.includes(movie.imdbID)}
-                />
+                <MovieListItem key={movie.imdbID} movie={movie} />
               ))}
             </Grid>
-          </Box> */}
+          </Box>
         </Stack>
       </Container>
     </>

@@ -1,15 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { createWrapper } from 'next-redux-wrapper'
 import { movieApi } from './movieApi'
+import favoritesReducer from '../store/favoritesSlice'
+import { authMiddleware } from './localStorageMiddleware'
 
 const makeStore = () =>
   configureStore({
     reducer: {
+      favorites: favoritesReducer,
       [movieApi.reducerPath]: movieApi.reducer,
     },
-    devTools: true,
+		devTools: true,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(movieApi.middleware),
+      getDefaultMiddleware().concat(movieApi.middleware, authMiddleware),
   })
 
 export type AppStore = ReturnType<typeof makeStore>
