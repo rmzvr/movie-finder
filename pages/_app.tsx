@@ -12,8 +12,6 @@ import { useEffect } from 'react'
 import { Router } from 'next/router'
 import Nprogress from 'nprogress'
 
-Nprogress.configure({ showSpinner: false })
-
 const clientSideEmotionCache = createEmotionCache()
 
 export interface MyAppProps extends AppProps {

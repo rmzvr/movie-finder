@@ -116,7 +116,7 @@ export default function Movies() {
               </Button>
             </Grid>
 
-            {!isPhonesMediaQuery && (
+            {!!totalMovies && !isPhonesMediaQuery && (
               <Grid item xs={8} display='flex' justifyContent='flex-end'>
                 <Pagination
                   count={totalPages}
@@ -155,7 +155,7 @@ export default function Movies() {
             </Grid>
           </Box>
 
-          {isPhonesMediaQuery && (
+          {!!totalMovies && isPhonesMediaQuery && (
             <Box display='flex' justifyContent='center'>
               <Pagination
                 count={totalPages}
