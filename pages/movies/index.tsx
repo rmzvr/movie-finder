@@ -56,7 +56,7 @@ export default function Movies() {
   })
 
   const movies = data?.Search ?? []
-  const totalMovies = data?.totalResults ?? 1
+  const totalMovies = data?.totalResults ?? 0
 
   const totalPages: number = Math.ceil(+totalMovies / MAX_MOVIES_PER_PAGE)
   const initialPage: number = parseInt(
