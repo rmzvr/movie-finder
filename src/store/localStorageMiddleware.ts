@@ -3,7 +3,7 @@ import { MoviePreview } from '../types/moviePreview'
 import { addFavorite, removeFavorite } from './favoritesSlice'
 
 export const localStorageMiddleware =
-  (store: Store) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
+  (store: any) => (next: any) => (action: any) => {
     if (addFavorite.match(action)) {
       const data = localStorage.getItem('favorites')
 
