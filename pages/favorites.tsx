@@ -4,9 +4,13 @@ import { MoviePreview } from '../src/types/moviePreview'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import { NextRouter, useRouter } from 'next/router'
 import { useAppSelector } from '../src/hooks/useAppSelector'
-import { selectFavorites } from '../src/store/favoritesSlice'
+import { selectFavorites, setFavorites } from '../src/store/favoritesSlice'
+import { useEffect } from 'react'
+import { useAppDispatch } from '../src/hooks/useAppDispatch'
 
 export default function Favorites() {
+  const dispatch = useAppDispatch()
+
   const router: NextRouter = useRouter()
 
   const favoriteMovies = useAppSelector(selectFavorites)
@@ -14,6 +18,13 @@ export default function Favorites() {
   function navigateBack(): void {
     router.back()
   }
+
+  useEffect(() => {
+    const data = localStorage.getItem('favorites')
+    const parsedData = data ? JSON.parse(data) : []
+
+    dispatch(setFavorites(parsedData))
+  }, [])
 
   return (
     <>
