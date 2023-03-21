@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { createWrapper } from 'next-redux-wrapper'
 import { movieApi } from './movieApi'
 import favoritesReducer from '../store/favoritesSlice'
-import { authMiddleware } from './localStorageMiddleware'
+import { localStorageMiddleware } from './localStorageMiddleware'
 
 const makeStore = () =>
   configureStore({
@@ -10,9 +10,12 @@ const makeStore = () =>
       favorites: favoritesReducer,
       [movieApi.reducerPath]: movieApi.reducer,
     },
-		devTools: true,
+    devTools: true,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(movieApi.middleware, authMiddleware),
+      getDefaultMiddleware().concat(
+        movieApi.middleware,
+        localStorageMiddleware
+      ),
   })
 
 export type AppStore = ReturnType<typeof makeStore>
