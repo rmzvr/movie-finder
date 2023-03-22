@@ -1,23 +1,16 @@
-import { Container, Grid, Button, Typography, Stack, Box } from '@mui/material'
+import { Container, Grid, Typography, Stack, Box } from '@mui/material'
 import MovieListItem from '../src/components/MovieListItem'
 import { MoviePreview } from '../src/types/moviePreview'
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import { NextRouter, useRouter } from 'next/router'
 import { useAppSelector } from '../src/hooks/useAppSelector'
 import { selectFavorites, setFavorites } from '../src/store/favoritesSlice'
 import { useEffect } from 'react'
 import { useAppDispatch } from '../src/hooks/useAppDispatch'
+import NavigateBackButton from '../src/components/NavigateBackButton'
 
 export default function Favorites() {
   const dispatch = useAppDispatch()
 
-  const router: NextRouter = useRouter()
-
-  const favoriteMovies = useAppSelector(selectFavorites)
-
-  function navigateBack(): void {
-    router.back()
-  }
+  const favoriteMovies: MoviePreview[] = useAppSelector(selectFavorites)
 
   useEffect(() => {
     const data = localStorage.getItem('favorites')
@@ -31,13 +24,7 @@ export default function Favorites() {
       <Container maxWidth='xl'>
         <Stack spacing={3} my={3}>
           <Box>
-            <Button
-              variant='outlined'
-              onClick={navigateBack}
-              startIcon={<ArrowBackIosNewIcon fontSize='small' />}
-            >
-              Go back
-            </Button>
+            <NavigateBackButton />
           </Box>
 
           {!favoriteMovies.length && (

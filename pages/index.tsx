@@ -13,7 +13,7 @@ export default function App() {
     router.query.search?.toString() ?? ''
   )
 
-  function submitForm(event: FormEvent): void {
+  function findMovies(event: FormEvent): void {
     event.preventDefault()
 
     if (!search.length) return
@@ -39,7 +39,7 @@ export default function App() {
       >
         <Box
           component='form'
-          onSubmit={submitForm}
+          onSubmit={findMovies}
           display='flex'
           gap={2}
           sx={{

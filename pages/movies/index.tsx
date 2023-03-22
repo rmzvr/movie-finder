@@ -7,13 +7,13 @@ import {
   Box,
   Stack,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 import Head from 'next/head'
 import { GetServerSidePropsContext } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 
-import { BASE_RADIX, MAX_MOVIES_PER_PAGE } from '../../src/constants'
+import { MAX_MOVIES_PER_PAGE } from '../../src/constants'
 import { MoviePreview } from '../../src/types/moviePreview'
 import MovieListItem from '../../src/components/MovieListItem'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
@@ -22,49 +22,40 @@ import {
   getRunningQueriesThunk,
   useGetMovieListQuery,
 } from '../../src/store/movieApi'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { wrapper } from '../../src/store/store'
 import { selectFavorites, setFavorites } from '../../src/store/favoritesSlice'
 import { useAppSelector } from '../../src/hooks/useAppSelector'
 import { useAppDispatch } from '../../src/hooks/useAppDispatch'
+import { useMediaBreakPoints } from '../../src/hooks/useMediaBreakPoints'
+import { useScrollToTop } from '../../src/hooks/useScrollToTop'
 
 export default function Movies() {
-  const dispatch = useAppDispatch()
-  const isBrowser = () => typeof window !== 'undefined'
-
-  const theme = useTheme()
-  const isPhonesMediaQuery = useMediaQuery(
-    theme.breakpoints.between('xs', 'sm')
-  )
-
-  const favoriteMovies = useAppSelector(selectFavorites)
-
-  const siblingCount = isPhonesMediaQuery ? 0 : 1
-  const boundaryCount = isPhonesMediaQuery ? 0 : 1
-
   const router: NextRouter = useRouter()
 
-  let { search, page } = router.query
+  const dispatch = useAppDispatch()
 
-  search = search?.toString() ?? ''
-  page = page?.toString() ?? ''
+  const scrollToTop = useScrollToTop()
+
+  const [isPhonesMediaQuery] = useMediaBreakPoints()
+
+  const { search: searchQuery = '', page: pageQuery = 1 } = router.query
 
   const { data } = useGetMovieListQuery({
-    search,
-    page,
+    searchQuery: searchQuery.toString(),
+    pageQuery: pageQuery.toString(),
   })
 
-  const movies = data?.Search ?? []
-  const totalMovies = data?.totalResults ?? 0
+  const movies: MoviePreview[] = data?.Search ?? []
 
-  const totalPages: number = Math.ceil(+totalMovies / MAX_MOVIES_PER_PAGE)
-  const initialPage: number = parseInt(
-    router.query.page?.toString() ?? '1',
-    BASE_RADIX
-  )
+  const totalMovies: number = Number(data?.totalResults ?? 0)
+  const totalPages: number = Math.ceil(totalMovies / MAX_MOVIES_PER_PAGE)
 
-  const [currentPage, setCurrentPage] = useState<number>(initialPage)
+  const paginationSiblingCount: number = isPhonesMediaQuery ? 0 : 1
+  const paginationBoundaryCount: number = isPhonesMediaQuery ? 0 : 1
+
+  const [currentPage, setCurrentPage] = useState<number>(+pageQuery)
+
+  const favoriteMovies: MoviePreview[] = useAppSelector(selectFavorites)
 
   useEffect(() => {
     isPhonesMediaQuery && scrollToTop()
@@ -77,18 +68,10 @@ export default function Movies() {
     dispatch(setFavorites(parsedData))
   }, [])
 
-  function scrollToTop() {
-    if (!isBrowser()) return
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  async function handleChange(
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) {
+  function handleChange(event: ChangeEvent<unknown>, value: number) {
     setCurrentPage(value)
 
-    router.push(`/movies?search=${search}&page=${value}`, undefined, {
+    router.push(`/movies?search=${searchQuery}&page=${value}`, undefined, {
       shallow: true,
     })
   }
@@ -121,8 +104,8 @@ export default function Movies() {
                 <Pagination
                   count={totalPages}
                   page={currentPage}
-                  siblingCount={siblingCount}
-                  boundaryCount={boundaryCount}
+                  siblingCount={paginationSiblingCount}
+                  boundaryCount={paginationBoundaryCount}
                   onChange={handleChange}
                   variant='outlined'
                   shape='rounded'
@@ -133,7 +116,7 @@ export default function Movies() {
           </Grid>
 
           <Typography variant='h5' component='h1'>
-            Found {totalMovies} results for "{search}"
+            Found {totalMovies} results for "{searchQuery}"
           </Typography>
 
           <Box>
@@ -147,9 +130,11 @@ export default function Movies() {
                   key={movie.imdbID}
                   movie={movie}
                   isFavoriteButtonVisible={true}
-                  isFavoriteMovie={favoriteMovies.some((m: MoviePreview) => {
-                    return m.imdbID === movie.imdbID
-                  })}
+                  isFavoriteMovie={
+                    !!favoriteMovies.find(
+                      (m: MoviePreview) => m.imdbID === movie.imdbID
+                    )
+                  }
                 />
               ))}
             </Grid>
@@ -160,8 +145,8 @@ export default function Movies() {
               <Pagination
                 count={totalPages}
                 page={currentPage}
-                siblingCount={siblingCount}
-                boundaryCount={boundaryCount}
+                siblingCount={paginationSiblingCount}
+                boundaryCount={paginationBoundaryCount}
                 onChange={handleChange}
                 variant='outlined'
                 shape='rounded'
@@ -177,10 +162,14 @@ export default function Movies() {
 
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (context: GetServerSidePropsContext) => {
-    const search = context.query?.search?.toString() ?? ''
-    const page = context.query?.page?.toString() ?? ''
+    const { search: searchQuery = '', page: pageQuery = 1 } = context.query
 
-    store.dispatch(getMovieList.initiate({ search, page }))
+    store.dispatch(
+      getMovieList.initiate({
+        searchQuery: searchQuery.toString(),
+        pageQuery: pageQuery.toString(),
+      })
+    )
 
     await Promise.all(store.dispatch(getRunningQueriesThunk()))
 

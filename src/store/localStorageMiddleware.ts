@@ -1,28 +1,36 @@
-import { AnyAction, Dispatch, Store } from '@reduxjs/toolkit'
 import { MoviePreview } from '../types/moviePreview'
 import { addFavorite, removeFavorite } from './favoritesSlice'
 
 export const localStorageMiddleware =
-  (store: any) => (next: any) => (action: any) => {
-    if (addFavorite.match(action)) {
-      const data = localStorage.getItem('favorites')
+  (store: any) => (next: any) => async (action: any) => {
+    if (action.type === addFavorite.type) {
+      const data = await getFavoritesFromLocalStorage()
+      const favorites = [...data, action.payload]
 
-      const parsedData = data ? JSON.parse(data) : []
+      await saveFavoritesToLocalStorage(favorites)
+    } else if (action.type === removeFavorite.type) {
+      const data = await getFavoritesFromLocalStorage()
+      const favorites = data.filter(
+        (movie: MoviePreview) => movie.imdbID !== action.payload
+      )
 
-      const favorites = [...parsedData, action.payload]
-      localStorage.setItem('favorites', JSON.stringify(favorites))
-    } else if (removeFavorite.match(action)) {
-      const data = localStorage.getItem('favorites')
-
-      const parsedData = data ? JSON.parse(data) : []
-
-      const favorites = [
-        ...parsedData.filter(
-          (movie: MoviePreview) => movie.imdbID !== action.payload
-        ),
-      ]
-
-      localStorage.setItem('favorites', JSON.stringify(favorites))
+      await saveFavoritesToLocalStorage(favorites)
     }
+
     return next(action)
   }
+
+const getFavoritesFromLocalStorage = async (): Promise<MoviePreview[]> => {
+  try {
+    const data = await Promise.resolve(localStorage.getItem('favorites'))
+    return JSON.parse(data || '[]')
+  } catch (error) {
+    return []
+  }
+}
+
+const saveFavoritesToLocalStorage = async (favorites: MoviePreview[]) => {
+  await Promise.resolve(
+    localStorage.setItem('favorites', JSON.stringify(favorites))
+  )
+}

@@ -7,7 +7,6 @@ import { NO_IMAGE_PLACEHOLDER } from '../../src/constants'
 
 import MovieCategoryItem from '../../src/components/MovieCategoryItem'
 
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import { Box, Button, Container, Typography, Grid, Stack } from '@mui/material'
 import TitleSection from '../../src/components/MovieDetails/TitleSection'
 import RatingSection from '../../src/components/MovieDetails/RatingSection'
@@ -19,6 +18,7 @@ import {
   getRunningQueriesThunk,
   useGetMovieByIdQuery,
 } from '../../src/store/movieApi'
+import NavigateBackButton from '../../src/components/NavigateBackButton'
 
 export default function MovieDetails() {
   const router: NextRouter = useRouter()
@@ -37,10 +37,6 @@ export default function MovieDetails() {
   const actors: string[] = movie?.Actors.split(', ') ?? []
   const languages: string[] = movie?.Language.split(', ') ?? []
 
-  function navigateBack(): void {
-    router.back()
-  }
-
   return (
     <>
       <Head>
@@ -48,14 +44,10 @@ export default function MovieDetails() {
       </Head>
 
       <Container maxWidth='lg'>
-        <Stack alignItems='start' spacing={3} my={3}>
-          <Button
-            variant='outlined'
-            startIcon={<ArrowBackIosNewIcon fontSize='small' />}
-            onClick={navigateBack}
-          >
-            Go back
-          </Button>
+        <Stack spacing={3} my={3}>
+          <Box>
+            <NavigateBackButton />
+          </Box>
 
           <Box>
             <Grid container spacing={5}>

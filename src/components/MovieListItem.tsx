@@ -1,8 +1,5 @@
 import { useState, MouseEvent, useEffect } from 'react'
 
-import { useDispatch } from 'react-redux'
-// import { addToFavorite, removeFromFavorite } from '../store/movieApi'
-
 import {
   Box,
   CardActionArea,

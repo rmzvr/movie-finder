@@ -10,8 +10,8 @@ interface Response {
 }
 
 interface Request {
-  search: string
-  page: string
+  searchQuery: string
+  pageQuery: string
 }
 
 export const movieApi = createApi({
@@ -26,10 +26,10 @@ export const movieApi = createApi({
   endpoints: (builder) => ({
     getMovieList: builder.query<Response, Request>({
       query(args) {
-        const { search, page } = args
+        const { searchQuery, pageQuery } = args
 
-        return `?apikey=885b04f0${search && '&s=' + search}${
-          page && '&page=' + page
+        return `?apikey=885b04f0${searchQuery && '&s=' + searchQuery}${
+          pageQuery && '&page=' + pageQuery
         }`
       },
     }),
