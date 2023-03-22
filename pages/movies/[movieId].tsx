@@ -18,7 +18,7 @@ import {
   getRunningQueriesThunk,
   useGetMovieByIdQuery,
 } from '../../src/store/movieApi'
-import NavigateBackButton from '../../src/components/NavigateBackButton'
+import NavigateBackButton from '../../src/components/buttons/NavigateBackButton'
 
 export default function MovieDetails() {
   const router: NextRouter = useRouter()

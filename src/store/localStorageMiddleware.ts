@@ -21,12 +21,9 @@ export const localStorageMiddleware =
   }
 
 const getFavoritesFromLocalStorage = async (): Promise<MoviePreview[]> => {
-  try {
-    const data = await Promise.resolve(localStorage.getItem('favorites'))
-    return JSON.parse(data || '[]')
-  } catch (error) {
-    return []
-  }
+	const data = await Promise.resolve(localStorage.getItem('favorites'))
+	
+  return JSON.parse(data || '[]')
 }
 
 const saveFavoritesToLocalStorage = async (favorites: MoviePreview[]) => {

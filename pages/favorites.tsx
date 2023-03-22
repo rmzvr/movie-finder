@@ -1,11 +1,11 @@
 import { Container, Grid, Typography, Stack, Box } from '@mui/material'
-import MovieListItem from '../src/components/MovieListItem'
+import MovieListItem from '../src/components/MoviePreviewCard'
 import { MoviePreview } from '../src/types/moviePreview'
 import { useAppSelector } from '../src/hooks/useAppSelector'
 import { selectFavorites, setFavorites } from '../src/store/favoritesSlice'
 import { useEffect } from 'react'
 import { useAppDispatch } from '../src/hooks/useAppDispatch'
-import NavigateBackButton from '../src/components/NavigateBackButton'
+import NavigateBackButton from '../src/components/buttons/NavigateBackButton'
 
 export default function Favorites() {
   const dispatch = useAppDispatch()
@@ -40,7 +40,11 @@ export default function Favorites() {
               spacing={5}
             >
               {favoriteMovies.map((movie: MoviePreview) => (
-                <MovieListItem key={movie.imdbID} movie={movie} />
+                <MovieListItem
+                  key={movie.imdbID}
+                  movie={movie}
+                  isFavoriteMovie={true}
+                />
               ))}
             </Grid>
           </Box>

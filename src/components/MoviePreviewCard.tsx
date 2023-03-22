@@ -11,7 +11,7 @@ import {
 
 import Image from 'next/image'
 
-import FavoriteButton from './FavoriteButton'
+import FavoriteButton from './buttons/FavoriteButton'
 
 import { NO_IMAGE_PLACEHOLDER } from '../constants'
 
@@ -20,10 +20,9 @@ import { NextRouter, useRouter } from 'next/router'
 import { useAppDispatch } from '../hooks/useAppDispatch'
 import { addFavorite, removeFavorite } from '../store/favoritesSlice'
 
-export default function MovieListItem({
+export default function MoviePreviewCard({
   movie,
   isFavoriteMovie = false,
-  isFavoriteButtonVisible = false,
 }: Props) {
   const router: NextRouter = useRouter()
   const dispatch = useAppDispatch()
@@ -60,12 +59,10 @@ export default function MovieListItem({
     <Grid item xs={1}>
       <Card onClick={navigateToMovie}>
         <CardActionArea>
-          {isFavoriteButtonVisible && (
-            <FavoriteButton
-              isFavorite={isFavorite}
-              handleClick={toggleFavorite}
-            />
-          )}
+          <FavoriteButton
+            isFavorite={isFavorite}
+            handleClick={toggleFavorite}
+          />
 
           <Box position='relative' height='23rem'>
             <Image

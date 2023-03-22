@@ -16,6 +16,11 @@
     "jsxImportSource": "@emotion/react",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/components/NavigateBackButton.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/buttons/NavigateBackButton.tsx"
+  ],
   "exclude": ["node_modules"]
 }

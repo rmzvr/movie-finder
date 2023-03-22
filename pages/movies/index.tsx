@@ -15,7 +15,7 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { MAX_MOVIES_PER_PAGE } from '../../src/constants'
 import { MoviePreview } from '../../src/types/moviePreview'
-import MovieListItem from '../../src/components/MovieListItem'
+import MovieListItem from '../../src/components/MoviePreviewCard'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import {
   getMovieList,

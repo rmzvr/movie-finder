@@ -1,4 +1,4 @@
-import { Props } from '../types/props/FavoriteButton'
+import { Props } from '../../types/props/FavoriteButton'
 
 import Checkbox from '@mui/material/Checkbox'
 
