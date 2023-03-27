@@ -1,29 +1,24 @@
-import { useEffect } from 'react'
-
 import { MoviePreviewCard } from './MoviePreviewCard'
 import { Box, Grid } from '@mui/material'
 
 import { MoviePreview } from '@/types'
 
-import { useAppDispatch, useAppSelector } from '@/hooks'
+import {
+  useAppDispatch,
+  useAppSelector,
+  useFavoritesFromLocalStorage,
+} from '@/hooks'
 
-import { selectFavorites, setFavorites } from '@/store/favoritesSlice'
+import { selectFavorites } from '@/store/favoritesSlice'
 
 interface Props {
   movies: MoviePreview[]
 }
 
 export const MovieList = ({ movies }: Props) => {
-  const dispatch = useAppDispatch()
+  useFavoritesFromLocalStorage()
 
   const favoriteMovies: MoviePreview[] = useAppSelector(selectFavorites)
-
-  useEffect(() => {
-    const data = localStorage.getItem('favorites')
-    const parsedData = data ? JSON.parse(data) : []
-
-    dispatch(setFavorites(parsedData))
-  }, [])
 
   return (
     <Box>

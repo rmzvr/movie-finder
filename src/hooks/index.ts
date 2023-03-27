@@ -3,6 +3,7 @@ import { useAppDispatch } from './useAppDispatch'
 import { useScrollToTop } from './useScrollToTop'
 import { useRouterQueries } from './useRouterQueries'
 import { useMediaBreakPoints } from './useMediaBreakPoints'
+import { useFavoritesFromLocalStorage } from './useFavoritesFromLocalStorage'
 
 export {
   useAppSelector,
@@ -10,4 +11,5 @@ export {
   useScrollToTop,
   useRouterQueries,
   useMediaBreakPoints,
+  useFavoritesFromLocalStorage,
 }
