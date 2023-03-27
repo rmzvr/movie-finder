@@ -23,12 +23,15 @@
     "react": "latest",
     "react-dom": "latest",
     "react-redux": "^8.0.5",
-    "react-spinners": "^0.13.8"
+    "react-spinners": "^0.13.8",
+    "redux-localstorage-simple": "^2.5.1",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@types/nprogress": "^0.2.0",
     "@types/react": "latest",
+    "@types/redux-persist": "^4.3.1",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "typescript": "latest"

@@ -1,4 +1,4 @@
-export function useScrollToTop() {
+export const useScrollToTop = () => {
   const isBrowser = () => typeof window !== 'undefined'
 
   function scrollToTop() {

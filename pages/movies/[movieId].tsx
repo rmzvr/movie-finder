@@ -1,41 +1,25 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { GetServerSidePropsContext } from 'next'
-import { NextRouter, useRouter } from 'next/router'
 
-import { NO_IMAGE_PLACEHOLDER } from '../../src/constants'
+import { Box, Container, Stack } from '@mui/material'
 
-import MovieCategoryItem from '../../src/components/MovieCategoryItem'
+import { MovieCard } from '@/components'
+import { NavigateButton } from '@/components/buttons'
 
-import { Box, Button, Container, Typography, Grid, Stack } from '@mui/material'
-import TitleSection from '../../src/components/MovieDetails/TitleSection'
-import RatingSection from '../../src/components/MovieDetails/RatingSection'
-import DetailsList from '../../src/components/MovieDetails/DetailsList'
-import DetailsListItem from '../../src/components/MovieDetails/DetailsListItem'
-import { wrapper } from '../../src/store/store'
+import { useRouterQueries } from '@/hooks'
+
 import {
   getMovieById,
   getRunningQueriesThunk,
   useGetMovieByIdQuery,
-} from '../../src/store/movieApi'
-import NavigateBackButton from '../../src/components/buttons/NavigateBackButton'
+} from '@/store/movieApi'
+
+import { wrapper } from '@/store/store'
 
 export default function MovieDetails() {
-  const router: NextRouter = useRouter()
-
-  const movieId: string = router.query?.movieId?.toString() ?? ''
+  const { movieId } = useRouterQueries('movieId')
 
   const { data: movie } = useGetMovieByIdQuery(movieId)
-
-  const imageURL: string = movie?.Poster
-    ? movie.Poster === 'N/A'
-      ? NO_IMAGE_PLACEHOLDER
-      : movie.Poster
-    : ''
-
-  const genres: string[] = movie?.Genre.split(', ') ?? []
-  const actors: string[] = movie?.Actors.split(', ') ?? []
-  const languages: string[] = movie?.Language.split(', ') ?? []
 
   return (
     <>
@@ -46,78 +30,32 @@ export default function MovieDetails() {
       <Container maxWidth='lg'>
         <Stack spacing={3} my={3}>
           <Box>
-            <NavigateBackButton />
+            <NavigateButton text='Go Back' />
           </Box>
 
-          <Box>
-            <Grid container spacing={5}>
-              <Grid item xs={12} md={4}>
-                <Box
-                  position='relative'
-                  minHeight='530px'
-                  borderRadius='10px'
-                  overflow='hidden'
-                >
-                  <Image
-                    src={imageURL}
-                    alt={movie?.Title ?? ''}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                </Box>
-              </Grid>
+          <MovieCard movie={movie}>
+            <MovieCard.ImageSection>
+              <MovieCard.Image />
+            </MovieCard.ImageSection>
 
-              <Grid item xs={12} md={8}>
-                <Stack spacing={2}>
-                  <TitleSection title={movie?.Title ?? ''} />
-                  <RatingSection rating={movie?.imdbRating ?? ''} />
+            <MovieCard.ContentSection>
+              <MovieCard.Title />
 
-                  <DetailsList>
-                    <DetailsListItem
-                      title='Length'
-                      content={movie?.Runtime ?? ''}
-                    />
-                    <DetailsListItem title='Language' content={languages[0]} />
-                    <DetailsListItem title='Year' content={movie?.Year ?? ''} />
-                  </DetailsList>
+              <MovieCard.Ratings />
 
-                  <MovieCategoryItem title='Genres'>
-                    <Stack direction='row' gap='0.6rem'>
-                      {genres.map((genre: string) => (
-                        <Button
-                          key={genre}
-                          variant='outlined'
-                          size='small'
-                          disabled
-                        >
-                          {genre}
-                        </Button>
-                      ))}
-                    </Stack>
-                  </MovieCategoryItem>
+              <MovieCard.HorizontalList>
+                <MovieCard.Duration />
+                <MovieCard.Language />
+                <MovieCard.Date />
+              </MovieCard.HorizontalList>
 
-                  <MovieCategoryItem title='Synopsis'>
-                    <Typography variant='body1'>{movie?.Plot ?? ''}</Typography>
-                  </MovieCategoryItem>
+              <MovieCard.Genres />
 
-                  <MovieCategoryItem title='Actors'>
-                    <Stack direction='row' gap='0.6rem'>
-                      {actors.map((actor: string) => (
-                        <Button
-                          key={actor}
-                          variant='outlined'
-                          size='small'
-                          disabled
-                        >
-                          {actor}
-                        </Button>
-                      ))}
-                    </Stack>
-                  </MovieCategoryItem>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Box>
+              <MovieCard.Synopsis />
+
+              <MovieCard.Actors />
+            </MovieCard.ContentSection>
+          </MovieCard>
         </Stack>
       </Container>
     </>

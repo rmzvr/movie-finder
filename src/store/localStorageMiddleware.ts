@@ -1,33 +1,47 @@
+import { Middleware } from 'redux'
 import { MoviePreview } from '../types/moviePreview'
 import { addFavorite, removeFavorite } from './favoritesSlice'
 
-export const localStorageMiddleware =
-  (store: any) => (next: any) => async (action: any) => {
-    if (action.type === addFavorite.type) {
-      const data = await getFavoritesFromLocalStorage()
-      const favorites = [...data, action.payload]
+export const localStorageMiddleware: Middleware =
+  (store) => (next) => async (action) => {
+    const { type, payload } = action
 
-      await saveFavoritesToLocalStorage(favorites)
-    } else if (action.type === removeFavorite.type) {
-      const data = await getFavoritesFromLocalStorage()
-      const favorites = data.filter(
-        (movie: MoviePreview) => movie.imdbID !== action.payload
-      )
-
-      await saveFavoritesToLocalStorage(favorites)
+    if (type === addFavorite.type) {
+      try {
+        const favorites = [...(await getFavoritesFromLocalStorage()), payload]
+        await saveFavoritesToLocalStorage(favorites)
+      } catch (error) {
+        console.error('Error adding favorite:', error)
+      }
+    } else if (type === removeFavorite.type) {
+      try {
+        const favorites = await getFavoritesFromLocalStorage()
+        const filteredFavorites = favorites.filter(
+          (movie: MoviePreview) => movie.imdbID !== payload.imdbID
+        )
+        await saveFavoritesToLocalStorage(filteredFavorites)
+      } catch (error) {
+        console.error('Error removing favorite:', error)
+      }
     }
 
     return next(action)
   }
 
 const getFavoritesFromLocalStorage = async (): Promise<MoviePreview[]> => {
-	const data = await Promise.resolve(localStorage.getItem('favorites'))
-	
-  return JSON.parse(data || '[]')
+  try {
+    const data = await localStorage.getItem('favorites')
+    return data ? JSON.parse(data) : []
+  } catch (error) {
+    console.error('Error getting favorites from local storage:', error)
+    return []
+  }
 }
 
 const saveFavoritesToLocalStorage = async (favorites: MoviePreview[]) => {
-  await Promise.resolve(
-    localStorage.setItem('favorites', JSON.stringify(favorites))
-  )
+  try {
+    await localStorage.setItem('favorites', JSON.stringify(favorites))
+  } catch (error) {
+    console.error('Error saving favorites to local storage:', error)
+  }
 }

@@ -1,11 +1,11 @@
-import { Container, Grid, Typography, Stack, Box } from '@mui/material'
-import MovieListItem from '../src/components/MoviePreviewCard'
+import { Container, Typography, Stack, Box } from '@mui/material'
 import { MoviePreview } from '../src/types/moviePreview'
 import { useAppSelector } from '../src/hooks/useAppSelector'
 import { selectFavorites, setFavorites } from '../src/store/favoritesSlice'
 import { useEffect } from 'react'
 import { useAppDispatch } from '../src/hooks/useAppDispatch'
-import NavigateBackButton from '../src/components/buttons/NavigateBackButton'
+import { NavigateButton } from '@/components/buttons'
+import { MovieList } from '@/components'
 
 export default function Favorites() {
   const dispatch = useAppDispatch()
@@ -24,7 +24,7 @@ export default function Favorites() {
       <Container maxWidth='xl'>
         <Stack spacing={3} my={3}>
           <Box>
-            <NavigateBackButton />
+            <NavigateButton text='Go Back' />
           </Box>
 
           {!favoriteMovies.length && (
@@ -33,21 +33,7 @@ export default function Favorites() {
             </Typography>
           )}
 
-          <Box>
-            <Grid
-              container
-              columns={{ xs: 1, sm: 3, md: 4, lg: 5 }}
-              spacing={5}
-            >
-              {favoriteMovies.map((movie: MoviePreview) => (
-                <MovieListItem
-                  key={movie.imdbID}
-                  movie={movie}
-                  isFavoriteMovie={true}
-                />
-              ))}
-            </Grid>
-          </Box>
+          <MovieList movies={favoriteMovies} />
         </Stack>
       </Container>
     </>

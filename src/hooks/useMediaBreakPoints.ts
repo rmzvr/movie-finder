@@ -1,7 +1,7 @@
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
-export function useMediaBreakPoints() {
+export const useMediaBreakPoints = () => {
   const theme = useTheme()
 
   const isPhonesMediaQuery = useMediaQuery(
